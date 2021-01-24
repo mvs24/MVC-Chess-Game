@@ -6,7 +6,8 @@ export class Knight extends Piece {
   }
 
   isValidMove(move: number[]) {
-    const conflictingPiece: Piece = this.getConflictingPiece(move);
+    const conflictingPiece = this.getConflictingPiece(move);
+    if (!conflictingPiece) return true;
 
     if (this.color === conflictingPiece.color) return false;
     else return true;

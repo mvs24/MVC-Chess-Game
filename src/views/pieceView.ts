@@ -17,7 +17,7 @@ export const removeSquareAsPossibleMove = () => {
 export const makeSquareAsPossibleMove = (position: number[]) => {
   document
     .querySelector(`[data-position='${position[0]},${position[1]}']`)
-    ?.insertAdjacentHTML("afterbegin", `<span class='possibleMove'></span>`);
+    ?.classList.add("possibleMove");
 };
 
 export const removePieceFromGivenSquare = (position: number[]) => {
@@ -27,6 +27,7 @@ export const removePieceFromGivenSquare = (position: number[]) => {
 };
 
 export const movePiece = (piece: Piece): void => {
+  console.log(1);
   const markup = `
     <span class='piece'>
       ${piece.markup}

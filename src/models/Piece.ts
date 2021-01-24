@@ -39,12 +39,12 @@ export abstract class Piece {
     return conflictPositions;
   }
 
-  getConflictingPiece(conflictMove: number[]): Piece {
+  getConflictingPiece(conflictMove: number[]): Piece | undefined {
     return state.pieces.find(
       (piece: Piece) =>
         piece.position[0] === conflictMove[0] &&
         piece.position[1] === conflictMove[1]
-    )!;
+    );
   }
 
   move(position: number[]) {

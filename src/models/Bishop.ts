@@ -79,7 +79,7 @@ export class Bishop extends Piece {
 
     const availableMoves: number[][] = [];
     const [conflictPosition] = conflictPositions;
-    if (this.color !== this.getConflictingPiece(conflictPosition).color) {
+    if (this.color !== this.getConflictingPiece(conflictPosition)!.color) {
       availableMoves.push(conflictPosition);
     }
 
@@ -107,7 +107,7 @@ export class Bishop extends Piece {
     const [conflictPosition] = conflictPositions;
     const availableMoves: number[][] = [];
 
-    if (this.color !== this.getConflictingPiece(conflictPosition).color) {
+    if (this.color !== this.getConflictingPiece(conflictPosition)!.color) {
       availableMoves.push(conflictPosition);
     }
 
@@ -135,7 +135,7 @@ export class Bishop extends Piece {
     const [conflictPosition] = conflictPositions;
     const availableMoves: number[][] = [];
 
-    if (this.color !== this.getConflictingPiece(conflictPosition).color) {
+    if (this.color !== this.getConflictingPiece(conflictPosition)!.color) {
       availableMoves.push(conflictPosition);
     }
 
@@ -163,7 +163,7 @@ export class Bishop extends Piece {
     const [conflictPosition] = conflictPositions;
     const availableMoves: number[][] = [];
 
-    if (this.color !== this.getConflictingPiece(conflictPosition).color) {
+    if (this.color !== this.getConflictingPiece(conflictPosition)!.color) {
       availableMoves.push(conflictPosition);
     }
 

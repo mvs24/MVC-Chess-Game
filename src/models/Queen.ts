@@ -97,7 +97,7 @@ export class Queen extends Piece {
 
     const [conflictMove] = conflictMoves;
 
-    if (this.color !== this.getConflictingPiece(conflictMove).color) {
+    if (this.color !== this.getConflictingPiece(conflictMove)!.color) {
       availableMoves.push(conflictMove);
     }
     this.getAllTopMoves().forEach((topMove) => {
@@ -118,8 +118,11 @@ export class Queen extends Piece {
 
     const availableMoves: number[][] = [];
 
-    const [conflictMove] = conflictMoves;
-    if (this.color !== this.getConflictingPiece(conflictMove).color) {
+    const [conflictMove] = conflictMoves.sort((a, b) => {
+      if (a[0] < b[0]) return 1;
+      return -1;
+    });
+    if (this.color !== this.getConflictingPiece(conflictMove)!.color) {
       availableMoves.push(conflictMove);
     }
 
@@ -146,7 +149,7 @@ export class Queen extends Piece {
       return -1;
     });
 
-    if (this.color !== this.getConflictingPiece(conflictMove).color) {
+    if (this.color !== this.getConflictingPiece(conflictMove)!.color) {
       availableMoves.push(conflictMove);
     }
     this.getAllLeftMoves().forEach((leftMove) => {
@@ -171,7 +174,7 @@ export class Queen extends Piece {
       if (a[1] < b[1]) return 1;
       return -1;
     });
-    if (this.color !== this.getConflictingPiece(conflictMove).color) {
+    if (this.color !== this.getConflictingPiece(conflictMove)!.color) {
       availableMoves.push(conflictMove);
     }
 
@@ -213,7 +216,7 @@ export class Queen extends Piece {
 
     const availableMoves: number[][] = [];
     const [conflictPosition] = conflictPositions;
-    if (this.color !== this.getConflictingPiece(conflictPosition).color) {
+    if (this.color !== this.getConflictingPiece(conflictPosition)!.color) {
       availableMoves.push(conflictPosition);
     }
 
@@ -241,7 +244,7 @@ export class Queen extends Piece {
     const [conflictPosition] = conflictPositions;
     const availableMoves: number[][] = [];
 
-    if (this.color !== this.getConflictingPiece(conflictPosition).color) {
+    if (this.color !== this.getConflictingPiece(conflictPosition)!.color) {
       availableMoves.push(conflictPosition);
     }
 
@@ -269,7 +272,7 @@ export class Queen extends Piece {
     const [conflictPosition] = conflictPositions;
     const availableMoves: number[][] = [];
 
-    if (this.color !== this.getConflictingPiece(conflictPosition).color) {
+    if (this.color !== this.getConflictingPiece(conflictPosition)!.color) {
       availableMoves.push(conflictPosition);
     }
 
@@ -297,7 +300,7 @@ export class Queen extends Piece {
     const [conflictPosition] = conflictPositions;
     const availableMoves: number[][] = [];
 
-    if (this.color !== this.getConflictingPiece(conflictPosition).color) {
+    if (this.color !== this.getConflictingPiece(conflictPosition)!.color) {
       availableMoves.push(conflictPosition);
     }
 

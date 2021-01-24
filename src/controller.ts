@@ -92,6 +92,13 @@ const getPieceBySquare = (position: number[]): Piece | null => {
   );
 };
 
+const isAttackingPosition = (position: number[]) => {
+  return state.pieces.some(
+    (piece: Piece) =>
+      piece.position[0] === position[0] && piece.position[1] === position[1]
+  );
+};
+
 const isValidMove = (position: number[]): boolean => {
   return state.currentPossibleMoves.some((possibleMove) => {
     return possibleMove[0] === position[0] && possibleMove[1] === position[1];
@@ -102,8 +109,20 @@ const changeTurn = (): void => {
   state.turn = state.turn === WHITE ? BLACK : WHITE;
 };
 
+const attackPiece = (piece: Piece) => {
+  pieceView.removePieceFromGivenSquare(piece.position);
+  state.pieces = state.pieces.filter(
+    (remainingPiece: Piece) => piece !== remainingPiece
+  );
+};
+
 const movePieceHandler = (position: number[]) => {
   pieceView.removePieceFromGivenSquare(state.currentPiece!.position);
+
+  if (isAttackingPosition(position)) {
+    const attackedPiece = getPieceBySquare(position)!;
+    attackPiece(attackedPiece);
+  }
 
   state.currentPiece!.move(position);
 
@@ -118,11 +137,19 @@ const movePieceController = (e: any) => {
   const currentPiecePosition = pieceView.getCurrentPiecePosition(e);
   const currentPiece = getPieceBySquare(currentPiecePosition);
 
-  if (state.turn === WHITE) {
-    if (currentPiece?.color === BLACK) return;
-  } else {
-    if (currentPiece?.color === WHITE) return;
-  }
+  // if (state.turn === WHITE) {
+  //   if (
+  //     isAttackingPosition(currentPiecePosition) &&
+  //     currentPiece?.color === BLACK
+  //   )
+  //     return;
+  // } else {
+  //   if (
+  //     isAttackingPosition(currentPiecePosition) &&
+  //     currentPiece?.color === WHITE
+  //   )
+  //     return;
+  // }
 
   if (state.currentPossibleMoves.length > 0 && state.currentPiece) {
     if (isValidMove(currentPiecePosition)) {

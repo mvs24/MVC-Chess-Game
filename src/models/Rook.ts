@@ -57,7 +57,7 @@ export class Rook extends Piece {
 
     const [conflictMove] = conflictMoves;
 
-    if (this.color !== this.getConflictingPiece(conflictMove).color) {
+    if (this.color !== this.getConflictingPiece(conflictMove)!.color) {
       availableMoves.push(conflictMove);
     }
     this.getAllTopMoves().forEach((topMove) => {
@@ -79,7 +79,7 @@ export class Rook extends Piece {
     const availableMoves: number[][] = [];
 
     const [conflictMove] = conflictMoves;
-    if (this.color !== this.getConflictingPiece(conflictMove).color) {
+    if (this.color !== this.getConflictingPiece(conflictMove)!.color) {
       availableMoves.push(conflictMove);
     }
 
@@ -106,7 +106,7 @@ export class Rook extends Piece {
       return -1;
     });
 
-    if (this.color !== this.getConflictingPiece(conflictMove).color) {
+    if (this.color !== this.getConflictingPiece(conflictMove)!.color) {
       availableMoves.push(conflictMove);
     }
     this.getAllLeftMoves().forEach((leftMove) => {
@@ -131,7 +131,7 @@ export class Rook extends Piece {
       if (a[1] < b[1]) return 1;
       return -1;
     });
-    if (this.color !== this.getConflictingPiece(conflictMove).color) {
+    if (this.color !== this.getConflictingPiece(conflictMove)!.color) {
       availableMoves.push(conflictMove);
     }
 

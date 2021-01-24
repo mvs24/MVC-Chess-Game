@@ -18,6 +18,9 @@ interface State {
   currentPossibleMoves: number[][];
   currentPiece: Piece | undefined;
   turn: "white" | "black";
+  checkMode: boolean;
+  kingAttacker: Piece | undefined;
+  kingDefender: Piece | undefined;
 }
 
 export const state: State = {
@@ -28,6 +31,9 @@ export const state: State = {
   currentPossibleMoves: [],
   currentPiece: undefined,
   turn: WHITE,
+  checkMode: false,
+  kingAttacker: undefined,
+  kingDefender: undefined,
 };
 
 (() => {
@@ -85,6 +91,12 @@ const createBoard = () => {
   });
 };
 
+const getWhitePieces = () =>
+  state.pieces.filter((piece: Piece) => piece.color === WHITE);
+
+const getBlackPieces = () =>
+  state.pieces.filter((piece: Piece) => piece.color === BLACK);
+
 const getPieceBySquare = (position: number[]): Piece | null => {
   //@ts-ignore
   return state.pieces.find(
@@ -109,11 +121,47 @@ const changeTurn = (): void => {
   state.turn = state.turn === WHITE ? BLACK : WHITE;
 };
 
-const attackPiece = (piece: Piece) => {
-  pieceView.removePieceFromGivenSquare(piece.position);
+const getNextMoves = (piece: Piece) => {
+  return piece.getAllMoves();
+};
+
+const removePieceFromBoard = (piece: Piece) => {
   state.pieces = state.pieces.filter(
     (remainingPiece: Piece) => piece !== remainingPiece
   );
+};
+
+const attackPiece = (piece: Piece) => {
+  pieceView.removePieceFromGivenSquare(piece.position);
+
+  removePieceFromBoard(piece);
+};
+
+const getOpponentKing = () => {
+  const opponentKingColor = state.currentPiece!.color === WHITE ? BLACK : WHITE;
+
+  return state.pieces.find(
+    (piece: Piece) =>
+      piece.markup === (opponentKingColor === WHITE ? `&#9812` : "&#9818")
+  );
+};
+
+const isKingPositionAttacked = (nextMoves: number[][]) => {
+  const king = getOpponentKing();
+
+  return nextMoves.some(
+    (move) => move[0] === king!.row && move[1] === king!.column
+  );
+};
+
+const isCheck = () => {
+  const nextMoves = getNextMoves(state.currentPiece!);
+
+  const opponentKingColor = state.currentPiece!.color === WHITE ? BLACK : WHITE;
+
+  return opponentKingColor === WHITE
+    ? isKingPositionAttacked(nextMoves)
+    : isKingPositionAttacked(nextMoves);
 };
 
 const movePieceHandler = (position: number[]) => {
@@ -123,8 +171,16 @@ const movePieceHandler = (position: number[]) => {
     const attackedPiece = getPieceBySquare(position)!;
     attackPiece(attackedPiece);
   }
-
   state.currentPiece!.move(position);
+
+  if (isCheck()) {
+    const opponentKing = getOpponentKing()! as King;
+    opponentKing.setCheckMode(true);
+    state.checkMode = true;
+    state.kingAttacker = state.currentPiece;
+
+    pieceView.renderCheckMode(opponentKing.position);
+  }
 
   pieceView.movePiece(state.currentPiece!);
 
@@ -133,10 +189,102 @@ const movePieceHandler = (position: number[]) => {
   changeTurn();
 };
 
+const getAvailablePiecesToMoveInCheckMode = () => {
+  const [kingAttackerRow, kingAttackerColumn] = state.kingAttacker!.position;
+  const kingAttackerColor = state.kingAttacker!.color;
+
+  const availablePiecesToMove: Piece[] = [];
+
+  if (kingAttackerColor === WHITE) {
+    const blackPieces = getBlackPieces();
+    blackPieces.forEach((piece: Piece) => {
+      const allMoves = piece.getAllMoves();
+      if (
+        allMoves.some(
+          (move) =>
+            move[0] === kingAttackerRow && move[1] === kingAttackerColumn
+        )
+      )
+        availablePiecesToMove.push(piece);
+    });
+  } else if (kingAttackerColor === BLACK) {
+    const whitePieces = getWhitePieces();
+    whitePieces.forEach((piece: Piece) => {
+      const allMoves = piece.getAllMoves();
+      if (
+        allMoves.some(
+          (move) =>
+            move[0] === kingAttackerRow && move[1] === kingAttackerColumn
+        )
+      )
+        availablePiecesToMove.push(piece);
+    });
+  }
+
+  return availablePiecesToMove;
+};
+
+const isAvailableMoveInCheckMode = (
+  availablePiecesToMove: Piece[],
+  currentPieceToMove: Piece | null
+) => {
+  if (currentPieceToMove === null) return false;
+
+  return availablePiecesToMove.some(
+    (piece: Piece) => piece === currentPieceToMove
+  );
+};
+
+const checkModeController = (e: any, currentPieceToMove: Piece | null) => {
+  // 1. Move KING if there is any possible move
+
+  // 2. Find all the pieces that can attack the piece which is attacking KING
+  const availablePiecesToMove: Piece[] = getAvailablePiecesToMoveInCheckMode();
+
+  const isKingAttackerSquareChecked =
+    e.target.closest(".square").dataset.position ===
+    `${state.kingAttacker!.position[0]},${state.kingAttacker!.position[1]}`;
+
+  if (
+    isAvailableMoveInCheckMode(availablePiecesToMove, currentPieceToMove) ||
+    isKingAttackerSquareChecked
+  ) {
+    pieceView.makeSquareAsPossibleMove(state.kingAttacker!.position);
+
+    if (!isKingAttackerSquareChecked) {
+      state.kingDefender = currentPieceToMove!;
+    }
+
+    if (isKingAttackerSquareChecked) {
+      pieceView.removeCheckMode();
+      pieceView.removePieceFromGivenSquare(state.kingDefender!.position);
+      pieceView.removePieceFromGivenSquare(state.kingAttacker!.position);
+      state.kingDefender?.move(state.kingAttacker!.position);
+      removePieceFromBoard(state.kingAttacker!);
+      pieceView.movePiece(state.kingDefender!);
+
+      state.kingAttacker = undefined;
+      state.kingDefender = undefined;
+      state.checkMode = false;
+      const checkedKing = state.pieces.find(
+        (piece: Piece) => piece instanceof King && piece.checked === true
+      ) as King;
+      checkedKing.setCheckMode(false);
+
+      changeTurn();
+    }
+  } else {
+    pieceView.removeSquareAsPossibleMove();
+  }
+};
+
+setInterval(() => console.log(state), 8000);
+
 const movePieceController = (e: any) => {
   const currentPiecePosition = pieceView.getCurrentPiecePosition(e);
   const currentPiece = getPieceBySquare(currentPiecePosition);
 
+  if (state.checkMode === true) return checkModeController(e, currentPiece);
   // if (state.turn === WHITE) {
   //   if (
   //     isAttackingPosition(currentPiecePosition) &&

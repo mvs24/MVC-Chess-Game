@@ -1,8 +1,11 @@
 import { Piece } from "./Piece";
 
 export class King extends Piece {
+  checked: boolean;
+
   constructor(position: number[], color: string, markup: string) {
     super(position, color, markup);
+    this.checked = false;
   }
 
   getAllMoves() {
@@ -29,6 +32,10 @@ export class King extends Piece {
       allMoves.push([this.row - 1, this.column - 1]);
 
     return allMoves;
+  }
+
+  public setCheckMode(checkMode: boolean) {
+    this.checked = checkMode;
   }
 
   getPossibleMoves() {

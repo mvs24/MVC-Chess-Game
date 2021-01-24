@@ -27,7 +27,6 @@ export const removePieceFromGivenSquare = (position: number[]) => {
 };
 
 export const movePiece = (piece: Piece): void => {
-  console.log(1);
   const markup = `
     <span class='piece'>
       ${piece.markup}
@@ -37,3 +36,12 @@ export const movePiece = (piece: Piece): void => {
     .querySelector(`[data-position='${piece.row},${piece.column}']`)!
     .insertAdjacentHTML("beforeend", markup);
 };
+
+export const renderCheckMode = (position: number[]) => {
+  document
+    .querySelector(`[data-position='${position[0]},${position[1]}']`)!
+    .classList.add("check");
+};
+
+export const removeCheckMode = () =>
+  document.querySelector(".check")!.classList.remove("check");

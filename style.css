@@ -1,0 +1,33 @@
+.square {
+  width: 39px;
+  height: 39px;
+  padding: 1.5rem;
+}
+.white {
+  background-color: white;
+}
+.black {
+  background-color: #777;
+}
+.board {
+  border: 1px solid black;
+  width: 700px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.piece {
+  font-size: 2rem;
+  cursor: pointer;
+}
+.possibleMove {
+  background-color: green;
+  width: 50%;
+  height: 50%;
+  z-index: 1;
+  border: 11px solid green;
+  text-align: center;
+  margin: 0 auto;
+  padding: 0.1rem;
+  border-radius: 50%;
+}
